@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+
+# add OIDC private key
+OIDC_RSA_PRIVATE_KEY=$(cat /tmp/app/secrets/oidc.key)
+export OIDC_RSA_PRIVATE_KEY
+
+# clear /tmp/app/ directory
+rm -rf /tmp/app/
+
+# run provided command, or supervisor
+if [ $# -gt 0 ]; then
+  exec "$@"
+else
+  exec /usr/bin/supervisord -c /etc/supervisor.d/supervisord.ini
+fi

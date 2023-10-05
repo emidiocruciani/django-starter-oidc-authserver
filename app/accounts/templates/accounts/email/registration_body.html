@@ -1,0 +1,3 @@
+<p>Activate account at <a href="{{ request.scheme }}://{{ site.domain }}{% url 'activation' activation_key %}">Link</a></p>
+
+<p>Link is valid for {{ expiration_days }} days.</p>

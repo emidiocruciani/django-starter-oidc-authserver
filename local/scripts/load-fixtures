@@ -1,0 +1,10 @@
+#!/bin/sh
+
+echo 'Loading fixtures..'
+
+for filename in ../docker/fixtures/*.json; do
+    [ -e "${filename}" ] || continue
+
+    echo "Loading fixture $(basename "${filename}").."
+    docker compose -f ./local/compose.yml exec -u "$(id -u):$(id -g)" auth python manage.py loaddata "/var/app/fixtures/${filename}"
+done

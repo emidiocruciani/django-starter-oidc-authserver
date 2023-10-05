@@ -1,0 +1,40 @@
+{% extends "accounts/component/page.html" %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block content %}
+    <div class="content-width d-flex flex-column">
+        <h1 class="my-4">login</h1>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post" action="" novalidate>
+                    {% csrf_token %}
+                    {% include "accounts/component/form_field.html" with field=form.username input_type="username" %}
+                    {% include "accounts/component/form_field.html" with field=form.password input_type="password" %}
+                    <p class="form-text"><a class="card-link" href="{% url 'password_reset' %}">Forgot password?</a></p>
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            <p class="form-text text-danger">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    {% endif %}
+                    <input class="btn btn-primary" type="submit" value="Login">
+                    <input type="hidden" name="next" value="{{ next }}">
+                    <p class="card-text mt-2">
+                        Don't have an account? <a class="card-link" href="{% url 'registration' %}">Register</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                {% include "accounts/component/message.html" with message=message %}
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}

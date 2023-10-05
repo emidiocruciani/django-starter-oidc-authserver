@@ -1,0 +1,19 @@
+{% extends "accounts/component/page.html" %}
+
+{% block title %}
+    Error during activation
+{% endblock %}
+
+{% block content %}
+    <div class="content-width d-flex flex-column">
+        <h1 class="my-4">activation error</h1>
+
+        <p>Insert here activation instructions.</p>
+
+        {% if messages %}
+            {% for message in messages %}
+                {% include "accounts/component/message.html" with message=message %}
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}

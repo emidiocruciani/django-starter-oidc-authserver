@@ -1,0 +1,11 @@
+{% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+    text-info
+{% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+    text-success
+{% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+    text-warning
+{% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+    text-error
+{% else %}
+    text-secondary
+{% endif %}

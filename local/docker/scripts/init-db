@@ -1,0 +1,14 @@
+#!/bin/sh
+
+echo 'Migrations..'
+python manage.py makemigrations
+python manage.py migrate
+
+echo 'Loading fixtures...'
+
+for filename in /var/app/fixtures/*.json; do
+    [ -e "${filename}" ] || continue
+
+    echo "Loading fixture $(basename "${filename}")..."
+    python manage.py loaddata "${filename}"
+done

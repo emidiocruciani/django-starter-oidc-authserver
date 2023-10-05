@@ -1,0 +1,35 @@
+{% extends "accounts/component/page.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block content %}
+    <div class="content-width d-flex flex-column">
+        <h1 class="my-4">Register</h1>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post" action="" novalidate>
+                    {% csrf_token %}
+                    {% include "accounts/component/form_field.html" with field=form.username input_type="username" %}
+                    {% include "accounts/component/form_field.html" with field=form.email input_type="email" %}
+                    {% include "accounts/component/form_field.html" with field=form.password1 input_type="password" %}
+                    {% include "accounts/component/form_field.html" with field=form.password2 input_type="password" %}
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            <p class="form-text text-danger">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    {% endif %}
+                    <input class="btn btn-primary mt-2" type="submit" value="Register">
+                    <input type="hidden" name="next" value="{{ next }}">
+                    <p class="card-text mt-2">
+                        Already have an account? <a class="card-link" href="{% url 'login' %}">Login</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

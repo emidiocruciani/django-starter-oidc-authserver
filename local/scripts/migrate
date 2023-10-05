@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo 'Database migrations..'
+
+docker compose -f ./local/compose.yml exec -u "$(id -u):$(id -g)" auth python manage.py makemigrations
+docker compose -f ./local/compose.yml exec -u "$(id -u):$(id -g)" auth python manage.py migrate

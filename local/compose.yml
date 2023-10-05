@@ -1,0 +1,93 @@
+# ----------------------------------------------------------------------------------------------------------------------
+# DISCLAIMER
+# this compose.yml is meant to be used in development environments only
+# ensure all password/secret variables in this file are not used in production
+# ----------------------------------------------------------------------------------------------------------------------
+version: '3.9'
+
+networks:
+  auth-dev:
+    driver: bridge
+
+volumes:
+  auth-db-vol:
+    driver: local
+
+services:
+  auth-db:
+    container_name: auth_db
+    environment:
+      - 'POSTGRES_DB=auth'
+      - 'POSTGRES_USER=root'
+      - 'POSTGRES_PASSWORD=root'
+      - 'PGPASSWORD=root'
+    healthcheck:
+      test: [ 'CMD', 'pg_isready', '-q', '-d', 'auth', '-U', 'root' ]
+      retries: 5
+      timeout: 5s
+      start_period: 1s
+    image: postgres:latest
+    networks:
+      auth-dev:
+        aliases:
+          - authdb.domain.localhost
+    volumes:
+      - 'auth-db-vol:/var/lib/postgresql/data'
+
+  auth:
+    build:
+      context: ../
+      target: base
+    container_name: auth_server
+    environment:
+      - 'DEBUG=1'
+      - 'SECRET_KEY=django-not-so-secret-key-1K'
+      - 'ALLOWED_HOSTS=localhost 127.0.0.1 [::1] auth.domain.localhost'
+      - 'CORS_ALLOWED_ORIGINS=http://localhost http://127.0.0.1'
+      - 'CORS_ALLOW_HEADERS=accept authorization cache-control content-type user-agent x-csrftoken x-requested-with'
+      - 'DB_ENGINE=django.db.backends.postgresql'
+      - 'DB_HOST=authdb.domain.localhost'
+      - 'DB_PORT=5432'
+      - 'DB_NAME=auth'
+      - 'DB_USER=root'
+      - 'DB_PASSWORD=root'
+      - 'EMAIL_HOST=smtp.domain.localhost'
+      - 'EMAIL_HOST_PASSWORD='
+      - 'EMAIL_HOST_USER='
+      - 'EMAIL_PORT=1025'
+      - 'EMAIL_USE_TLS=0'
+      - 'DEFAULT_FROM_EMAIL=admin@domain.localhost'
+    image: auth-server:local
+    networks:
+      auth-dev:
+        aliases:
+          - auth.domain.localhost
+    ports:
+      - '127.0.0.1:8080:80'
+    volumes:
+      - '../app:/app'
+      - '../local/docker/fixtures:/var/app/fixtures'
+      - '../local/docker/scripts:/var/app/scripts'
+
+  smtp:
+    container_name: mailhog_smtp
+    image: mailhog/mailhog:latest
+    networks:
+      auth-dev:
+        aliases:
+          - smtp.domain.localhost
+    ports:
+      - '127.0.0.1:9000:8025'
+
+  devtools-adminer:
+    container_name: tools_adminer
+    image: adminer:latest
+    environment:
+      - ADMINER_DESIGN=mvt
+      - ADMINER_DEFAULT_SERVER=authdb.domain.localhost
+    networks:
+      auth-dev:
+        aliases:
+          - tools-adminer.domain.localhost
+    ports:
+      - '127.0.0.1:9001:8080'

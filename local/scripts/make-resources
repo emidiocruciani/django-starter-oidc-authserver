@@ -1,0 +1,7 @@
+#!/bin/sh
+
+echo 'Building resources..'
+
+docker compose -f ./local/compose.yml exec -u "$(id -u):$(id -g)" auth python manage.py makemessages -l en -e py
+docker compose -f ./local/compose.yml exec -u "$(id -u):$(id -g)" auth python manage.py compilemessages
+docker compose -f ./local/compose.yml exec -u "$(id -u):$(id -g)" auth python manage.py collectstatic --no-input

@@ -1,0 +1,28 @@
+#!/bin/sh
+
+display_separator() {
+    printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+}
+
+display_separator
+echo 'Building docker images..'
+docker compose -f ./local/compose.yml build
+
+display_separator
+echo 'Starting docker services..'
+docker compose -f ./local/compose.yml up -d
+
+display_separator
+echo 'Database initialization..'
+docker compose -f ./local/compose.yml exec -u "$(id -u):$(id -g)" auth python manage.py makemigrations
+docker compose -f ./local/compose.yml exec -u "$(id -u):$(id -g)" auth python manage.py migrate
+
+display_separator
+echo 'Building resources..'
+docker compose -f ./local/compose.yml exec -u "$(id -u):$(id -g)" auth python manage.py makemessages -l en -e py
+docker compose -f ./local/compose.yml exec -u "$(id -u):$(id -g)" auth python manage.py compilemessages
+docker compose -f ./local/compose.yml exec -u "$(id -u):$(id -g)" auth python manage.py collectstatic --no-input
+
+display_separator
+echo 'Loading fixtures..'
+docker compose -f ./local/compose.yml exec -u "$(id -u):$(id -g)" auth sh /var/app/scripts/init-db
