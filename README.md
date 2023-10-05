@@ -39,6 +39,13 @@ pip install -r requirements.txt
 . ./local/scripts/install
 ```
 
+## Build image to use in other local projects
+
+```shell
+# execute script
+. ./local/scripts/build-local-portable-image
+```
+
 ## Related projects
 
 - Resource server [spring-starter-oidc-resourceserver](https://github.com/emidiocruciani/spring-starter-oidc-resourceserver/)
